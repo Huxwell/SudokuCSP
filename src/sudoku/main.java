@@ -110,14 +110,20 @@ public class main extends javax.swing.JFrame {
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         if (grid != null) {
-            grid.fill_in_order();
+            //grid.fill_in_order();
+            try {
+                grid.solve(0, 0);
+            }
+            catch (Exception e) {
+                System.out.println(e.getMessage());
+            }
             grid.draw(jPanel1);
         }
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
         grid = new Grid();
-        grid.init();
+        grid.init(jPanel1);
         grid.draw(jPanel1);
     }//GEN-LAST:event_jButton3ActionPerformed
 

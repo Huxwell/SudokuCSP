@@ -7,11 +7,21 @@ package sudoku;
 
 /**
  *
- * @author Orley
+ * @authhor Orley
  */
 public class Field {
+    Grid grid;
     int value;
-    public Field(int value) {
-        this.value = value;
+    public int[] domain = {1,2,3,4,5,6,7,8,9};
+    public int col, row;
+
+    public Field(int col, int row, Grid grid) {
+        this.value = -1;
+        this.col = col;
+        this.row = row;
+    }
+
+    public int[] computeDomain() {
+        return domain;
     }
 }

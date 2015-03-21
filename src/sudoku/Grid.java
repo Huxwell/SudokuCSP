@@ -31,7 +31,7 @@ public class Grid {
             for (int c = 0; c < size; c++) {
                 if (Math.random() < fillRate) {
                     //fields[r][c].value = (int) (Math.random() * 9);
-                    try_to_fill((int) (Math.random() * 9),  r,  c);
+                    try_to_fill((int) (Math.random() * 9), r, c);
                     System.out.println("r=" + r + " c=" + c + " val=" + fields[r][c].value);
                 }
 
@@ -54,13 +54,27 @@ public class Grid {
         }
     }
 
+    void fill_in_order_rec() {
+        for (int r = 0; r < size; r++) {
+            for (int c = 0; c < size; c++) {
+                boolean valid = false;
+                if (fields[r][c].value == -1) {
+                    for (int v = 1; v <= 9 && valid != true; v++) {
+                        valid = try_to_fill(v, r, c);
+                        System.out.println("IN ORDER r=" + r + " c=" + c + " val=" + fields[r][c].value);
+                    }
+                }
+            }
+        }
+    }
+
     boolean try_to_fill(int v, int r, int c) {
-        if (!ifRowOk(r,v)) {
-            System.out.println("row " + r + "already has value " + v);
+        if (!ifRowOk(r, v)) {
+            System.out.println("row " + r + " already has value " + v);
             return false;
         }
-        if (!ifColOk(c,v)) {
-            System.out.println("col " + c + "already has value " + v);
+        if (!ifColOk(c, v)) {
+            System.out.println("col " + c + " already has value " + v);
             return false;
         }
         if (false) {
@@ -75,7 +89,8 @@ public class Grid {
         for (int r = 0; r < size; r++) {
             for (int c = 0; c < size; c++) {
                 javax.swing.JButton btn = new javax.swing.JButton();
-                btn.setText("" + fields[r][c].value);
+                String text = fields[r][c].value==-1?"":""+fields[r][c].value;
+                btn.setText(text);
                 btn.setBounds(50, 50, 50, 50);
                 btn.move(r * 50, c * 50);
                 jPanel1.add(btn);
@@ -85,17 +100,23 @@ public class Grid {
     }
 
     boolean ifRowOk(int r, int v) {
-        for(Field f : fields[r]) {
-            if (f.value == v) return false;
+        for (Field f : fields[r]) {
+            if (f.value == v) {
+                return false;
+            }
         }
         return true;
     }
+
     boolean ifColOk(int c, int v) {
         for (int r = 0; r < size; r++) {
-            if(fields[r][c].value==v) return false;
+            if (fields[r][c].value == v) {
+                return false;
+            }
         }
         return true;
     }
+
     Field[] getRow(int r) {
         return fields[r];
     }

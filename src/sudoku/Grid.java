@@ -13,6 +13,8 @@ import java.util.logging.Logger;
  * @author Orley
  */
 public class Grid {
+
+    public static int steps = 0;
     private javax.swing.JPanel jPanel;
     int offsetR = 0, offsetC = 0;
     public static int size = 9;
@@ -64,16 +66,19 @@ public class Grid {
             System.out.println("col " + c + " already has value " + v);
             return false;
         }
-        if (false) {
+        if (!ifSectorOk(r,c,v)) {
             return false;
         }
         fields[r][c].value = v;
         return true;
     }
 
-    public void solve(int row, int col) throws Exception  {
+    public void solve(int row, int col) throws Exception {
+        steps++;
         // Throw an exception to stop the process if the puzzle is solved
-        if (row > 8) throw new Exception( "Solution found" ) ;
+        if (row > 8) {
+            throw new Exception("Solution found");
+        }
 
         // If the cell is not empty, continue with the next cell
         if (fields[row][col].value != -1) {
@@ -81,8 +86,8 @@ public class Grid {
         } else {
             // Find a valid number for the empty cell
             for (int num = 1; num < 10; num++) {
-                if (ifRowOk(row, num) && ifColOk(col, num)) {
-                    
+                if (ifRowOk(row, num) && ifColOk(col, num) && ifSectorOk(row,col,num)) {
+
                     fields[row][col].value = num;
                     System.out.println("r=" + row + " c=" + col + " val=" + fields[row][col].value);
                     //draw(jPanel);
@@ -90,17 +95,17 @@ public class Grid {
 
                     // Let the observer see it
                     //Thread.sleep(1000);
-
                     // Delegate work on the next cell to a recursive call
                     next(row, col);
                 }
             }
-                    System.out.println("r=" + row + " c=" + col + " cannot be filled, we go back" );
+            System.out.println("r=" + row + " c=" + col + " cannot be filled, we go back");
             // No valid number was found, clean up and return to caller
             fields[row][col].value = -1;
             //updateView();
         }
     }
+
     public void next(int row, int col) throws Exception {
         if (col < 8) {
             solve(row, col + 1);
@@ -108,6 +113,7 @@ public class Grid {
             solve(row + 1, 0);
         }
     }
+
     void draw(javax.swing.JPanel jPanel1) {
         jPanel1.removeAll();
         for (int r = 0; r < size; r++) {
@@ -121,6 +127,7 @@ public class Grid {
             }
         }
         jPanel1.repaint();
+        System.out.println("no of steps: " + steps);
     }
 
     boolean ifRowOk(int r, int v) {
@@ -142,7 +149,19 @@ public class Grid {
         }
         return true;
     }
+   protected boolean ifSectorOk( int row, int col, int num )
+   {
+      row = (row / 3) * 3 ;
+      col = (col / 3) * 3 ;
 
+      for( int r = 0; r < 3; r++ )
+         for( int c = 0; c < 3; c++ )
+         if( fields[row+r][col+c].value == num )
+            return false ;
+
+      return true ;
+   }
+    
     Field[] getRow(int r) {
         return fields[r];
     }

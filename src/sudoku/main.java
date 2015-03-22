@@ -10,7 +10,6 @@ package sudoku;
  * @author Orley
  */
 public class main extends javax.swing.JFrame {
-
     Grid grid;
     public static boolean slow_mode = false;
 
@@ -110,6 +109,7 @@ public class main extends javax.swing.JFrame {
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         if (grid != null) {
+            grid.steps = 0;
             //grid.fill_in_order();
             try {
                 grid.solve(0, 0);

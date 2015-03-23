@@ -5,6 +5,7 @@
  */
 package sudoku;
 
+import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -34,10 +35,20 @@ public class Grid {
             for (int c = 0; c < size; c++) {
                 if (Math.random() < fillRate) {
                     //fields[r][c].value = (int) (Math.random() * 9);
-                    try_to_fill((int) (Math.random() * 9), r, c);
+                    try_to_fill((int) (Math.random() * 9) + 1, r, c);
                     System.out.println("r=" + r + " c=" + c + " val=" + fields[r][c].value);
                 }
 
+            }
+        }
+    }
+
+    void fill_string(String line) {
+        int count = 0;
+        for (int r = 0; r < size; r++) {
+            for (int c = 0; c < size; c++) {
+                fields[r][c].value = line.charAt(count)!='0'?Character.getNumericValue(line.charAt(count)):-1;
+                count++;
             }
         }
     }
@@ -66,7 +77,7 @@ public class Grid {
             System.out.println("col " + c + " already has value " + v);
             return false;
         }
-        if (!ifSectorOk(r,c,v)) {
+        if (!ifSectorOk(r, c, v)) {
             return false;
         }
         fields[r][c].value = v;
@@ -86,7 +97,7 @@ public class Grid {
         } else {
             // Find a valid number for the empty cell
             for (int num = 1; num < 10; num++) {
-                if (ifRowOk(row, num) && ifColOk(col, num) && ifSectorOk(row,col,num)) {
+                if (ifRowOk(row, num) && ifColOk(col, num) && ifSectorOk(row, col, num)) {
 
                     fields[row][col].value = num;
                     System.out.println("r=" + row + " c=" + col + " val=" + fields[row][col].value);
@@ -103,6 +114,49 @@ public class Grid {
             // No valid number was found, clean up and return to caller
             fields[row][col].value = -1;
             //updateView();
+        }
+    }
+
+    public void solve(int row, int col, boolean[][][] domain) throws Exception {
+        steps++;
+        if (row > 8) {
+            throw new Exception("Solution found");
+        }
+        if (fields[row][col].value != -1) {
+            next(row, col, domain.clone());
+        } else {
+            for (int num = 1; num < 10; num++) {
+                if (domain[row][col][num] == true && ifSectorOk(row, col, num)) {
+                    fields[row][col].value = num;
+                    System.out.println("r=" + row + " c=" + col + " val=" + fields[row][col].value);
+                    boolean[][][] nDomain = copy3d(domain);
+                    cropDomainsAtCol(col, num, nDomain);
+                    cropDomainsAtRow(row, num, nDomain);
+                    next(row, col, nDomain);
+                }
+            }
+            System.out.println("r=" + row + " c=" + col + " cannot be filled, we go back");
+            fields[row][col].value = -1;
+        }
+    }
+
+    public boolean[][][] copy3d(boolean[][][] oldA) {
+        boolean[][][] newA = new boolean[Grid.size][Grid.size][10];
+        for (int r = 0; r < Grid.size; r++) {
+            for (int c = 0; c < Grid.size; c++) {
+                for (int v = 0; v < 10; v++) {
+                    newA[r][c][v] = oldA[r][c][v];
+                }
+            }
+        }
+        return newA;
+    }
+
+    public void next(int row, int col, boolean[][][] domain) throws Exception {
+        if (col < 8) {
+            solve(row, col + 1, domain);
+        } else {
+            solve(row + 1, 0, domain);
         }
     }
 
@@ -149,19 +203,35 @@ public class Grid {
         }
         return true;
     }
-   protected boolean ifSectorOk( int row, int col, int num )
-   {
-      row = (row / 3) * 3 ;
-      col = (col / 3) * 3 ;
 
-      for( int r = 0; r < 3; r++ )
-         for( int c = 0; c < 3; c++ )
-         if( fields[row+r][col+c].value == num )
-            return false ;
+    protected boolean ifSectorOk(int row, int col, int num) {
+        row = (row / 3) * 3;
+        col = (col / 3) * 3;
 
-      return true ;
-   }
-    
+        for (int r = 0; r < 3; r++) {
+            for (int c = 0; c < 3; c++) {
+                if (fields[row + r][col + c].value == num) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    void cropDomainsAtCol(int c, int v, boolean domain[][][]) {
+        System.out.println("croped " + v + " at col " + c);
+        for (int r = 0; r < Grid.size; r++) {
+            domain[r][c][v] = false;
+        }
+    }
+
+    void cropDomainsAtRow(int r, int v, boolean domain[][][]) {
+        System.out.println("croped " + v + " at row " + r);
+        for (int c = 0; c < Grid.size; c++) {
+            domain[r][c][v] = false;
+        }
+    }
+
     Field[] getRow(int r) {
         return fields[r];
     }

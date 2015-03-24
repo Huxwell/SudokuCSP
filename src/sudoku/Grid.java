@@ -47,7 +47,7 @@ public class Grid {
         int count = 0;
         for (int r = 0; r < size; r++) {
             for (int c = 0; c < size; c++) {
-                fields[r][c].value = line.charAt(count)!='0'?Character.getNumericValue(line.charAt(count)):-1;
+                fields[r][c].value = line.charAt(count) != '0' ? Character.getNumericValue(line.charAt(count)) : -1;
                 count++;
             }
         }
@@ -86,49 +86,56 @@ public class Grid {
 
     public void solve(int row, int col) throws Exception {
         steps++;
-        // Throw an exception to stop the process if the puzzle is solved
         if (row > 8) {
             throw new Exception("Solution found");
         }
-
-        // If the cell is not empty, continue with the next cell
         if (fields[row][col].value != -1) {
             next(row, col);
         } else {
-            // Find a valid number for the empty cell
             for (int num = 1; num < 10; num++) {
                 if (ifRowOk(row, num) && ifColOk(col, num) && ifSectorOk(row, col, num)) {
-
                     fields[row][col].value = num;
                     System.out.println("r=" + row + " c=" + col + " val=" + fields[row][col].value);
-                    //draw(jPanel);
-                    //updateView();
-
-                    // Let the observer see it
-                    //Thread.sleep(1000);
-                    // Delegate work on the next cell to a recursive call
                     next(row, col);
                 }
             }
             System.out.println("r=" + row + " c=" + col + " cannot be filled, we go back");
-            // No valid number was found, clean up and return to caller
             fields[row][col].value = -1;
-            //updateView();
         }
     }
 
+    public boolean[][][] initial_crop(boolean[][][] domain) {
+        return domain;
+    }
+
+    ;
+    public void drawDoms(boolean domain[][][]) {
+        for (int r = 0; r < size; r++) {
+            System.out.println("");
+            for (int c = 0; c < size; c++) {
+                System.out.print("|");
+                for (int i = 0; i < 10; i++) {
+                    System.out.print(" " + (domain[r][c][i] ? "" + i : ""));
+                }
+            }
+        }
+        System.out.println("\n\n\n");
+    }
+
     public void solve(int row, int col, boolean[][][] domain) throws Exception {
-        steps++;
+        //drawDoms(domain);
+        
         if (row > 8) {
             throw new Exception("Solution found");
         }
         if (fields[row][col].value != -1) {
-            next(row, col, domain.clone());
+            next(row, col, domain);
         } else {
             for (int num = 1; num < 10; num++) {
                 if (domain[row][col][num] == true && ifSectorOk(row, col, num)) {
                     fields[row][col].value = num;
                     System.out.println("r=" + row + " c=" + col + " val=" + fields[row][col].value);
+                    steps++;
                     boolean[][][] nDomain = copy3d(domain);
                     cropDomainsAtCol(col, num, nDomain);
                     cropDomainsAtRow(row, num, nDomain);
@@ -176,7 +183,7 @@ public class Grid {
                 String text = fields[r][c].value == -1 ? "" : "" + fields[r][c].value;
                 btn.setText(text);
                 btn.setBounds(50, 50, 50, 50);
-                btn.move(r * 50, c * 50);
+                btn.move(c * 50, r * 50);
                 jPanel1.add(btn);
             }
         }
@@ -219,17 +226,22 @@ public class Grid {
     }
 
     void cropDomainsAtCol(int c, int v, boolean domain[][][]) {
-        System.out.println("croped " + v + " at col " + c);
+        //System.out.println("croped " + v + " at col " + c);
+        //  drawDoms(domain);
         for (int r = 0; r < Grid.size; r++) {
             domain[r][c][v] = false;
         }
+        System.out.println("deleting " + v + " from col " + c);
+        //drawDoms(domain);
     }
 
     void cropDomainsAtRow(int r, int v, boolean domain[][][]) {
-        System.out.println("croped " + v + " at row " + r);
+        //System.out.println("croped " + v + " at row " + r);
         for (int c = 0; c < Grid.size; c++) {
             domain[r][c][v] = false;
         }
+        // System.out.println("deleting " + v + " from row " + r);
+        //drawDoms(domain);
     }
 
     Field[] getRow(int r) {

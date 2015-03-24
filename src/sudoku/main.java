@@ -160,13 +160,27 @@ public class main extends javax.swing.JFrame {
             grid.steps = 0;
             //grid.fill_in_order();
             try {
-                boolean smalldom[] = {true, true, true, true, true, true, true, true, true, true};
+                //boolean smalldom[] = {true, true, true, true, true, true, true, true, true, true};
                 boolean domain[][][] = new boolean[Grid.size][Grid.size][];
                 for (int r = 0; r < Grid.size; r++) {
                     for (int c = 0; c < Grid.size; c++) {
-                        domain[r][c] = smalldom;
+                            boolean smalldom[] = {true, true, true, true, true, true, true, true, true, true};
+                            domain[r][c] = smalldom;
+                        
                     }
                 }
+                //grid.drawDoms(domain);
+                //int delCounter = 0;
+                for (int r = 0; r < Grid.size; r++) {
+                    for (int c = 0; c < Grid.size; c++) {
+                        if (grid.fields[r][c].value != -1) {
+                            grid.cropDomainsAtCol(c, grid.fields[r][c].value, domain);
+                            grid.cropDomainsAtRow(r, grid.fields[r][c].value, domain);
+                        }
+                    }
+                }
+                //System.out.println("del counter:" + delCounter);
+                //grid.drawDoms(domain);
                 grid.solve(0, 0, domain);
             } catch (Exception e) {
                 System.out.println(e.getMessage());
@@ -188,11 +202,11 @@ public class main extends javax.swing.JFrame {
             while ((line = bufferedReader.readLine()) != null) {
                 text += line;
             }
-            if (grid != null) {
-                grid.fill_string(text);
-                grid.draw(jPanel1);
-            }
-            System.out.println(text);
+            grid = new Grid();
+            grid.init(jPanel1);
+            grid.fill_string(text);
+            grid.draw(jPanel1);
+            //System.out.println(text);
             fileReader.close();
         } catch (IOException e) {
             e.printStackTrace();

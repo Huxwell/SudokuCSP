@@ -36,7 +36,7 @@ public class Grid {
                 if (Math.random() < fillRate) {
                     //fields[r][c].value = (int) (Math.random() * 9);
                     try_to_fill((int) (Math.random() * 9) + 1, r, c);
-                    System.out.println("r=" + r + " c=" + c + " val=" + fields[r][c].value);
+                    if(! main.silent_mode) System.out.println("r=" + r + " c=" + c + " val=" + fields[r][c].value);
                 }
 
             }
@@ -60,7 +60,7 @@ public class Grid {
                 if (fields[r][c].value == -1) {
                     for (int v = 1; v <= 9 && valid != true; v++) {
                         valid = try_to_fill(v, r, c);
-                        System.out.println("IN ORDER r=" + r + " c=" + c + " val=" + fields[r][c].value);
+                        if(! main.silent_mode) System.out.println("IN ORDER r=" + r + " c=" + c + " val=" + fields[r][c].value);
                     }
                 }
 
@@ -70,11 +70,11 @@ public class Grid {
 
     boolean try_to_fill(int v, int r, int c) {
         if (!ifRowOk(r, v)) {
-            System.out.println("row " + r + " already has value " + v);
+            if(! main.silent_mode) System.out.println("row " + r + " already has value " + v);
             return false;
         }
         if (!ifColOk(c, v)) {
-            System.out.println("col " + c + " already has value " + v);
+            if(! main.silent_mode) System.out.println("col " + c + " already has value " + v);
             return false;
         }
         if (!ifSectorOk(r, c, v)) {
@@ -95,11 +95,11 @@ public class Grid {
             for (int num = 1; num < 10; num++) {
                 if (ifRowOk(row, num) && ifColOk(col, num) && ifSectorOk(row, col, num)) {
                     fields[row][col].value = num;
-                    System.out.println("r=" + row + " c=" + col + " val=" + fields[row][col].value);
+                    if(! main.silent_mode) System.out.println("r=" + row + " c=" + col + " val=" + fields[row][col].value);
                     next(row, col);
                 }
             }
-            System.out.println("r=" + row + " c=" + col + " cannot be filled, we go back");
+            if(! main.silent_mode) System.out.println("r=" + row + " c=" + col + " cannot be filled, we go back");
             fields[row][col].value = -1;
         }
     }
@@ -111,15 +111,15 @@ public class Grid {
     ;
     public void drawDoms(boolean domain[][][]) {
         for (int r = 0; r < size; r++) {
-            System.out.println("");
+            if(! main.silent_mode) System.out.println("");
             for (int c = 0; c < size; c++) {
-                System.out.print("|");
+                if(! main.silent_mode) System.out.print("|");
                 for (int i = 0; i < 10; i++) {
-                    System.out.print(" " + (domain[r][c][i] ? "" + i : ""));
+                    if(! main.silent_mode) System.out.print(" " + (domain[r][c][i] ? "" + i : ""));
                 }
             }
         }
-        System.out.println("\n\n\n");
+        if(! main.silent_mode) System.out.println("\n\n\n");
     }
 
     public void solve(int row, int col, boolean[][][] domain) throws Exception {
@@ -134,7 +134,7 @@ public class Grid {
             for (int num = 1; num < 10; num++) {
                 if (domain[row][col][num] == true && ifSectorOk(row, col, num)) {
                     fields[row][col].value = num;
-                    System.out.println("r=" + row + " c=" + col + " val=" + fields[row][col].value);
+                    if(! main.silent_mode) System.out.println("r=" + row + " c=" + col + " val=" + fields[row][col].value);
                     steps++;
                     boolean[][][] nDomain = copy3d(domain);
                     cropDomainsAtCol(col, num, nDomain);
@@ -142,7 +142,7 @@ public class Grid {
                     next(row, col, nDomain);
                 }
             }
-            System.out.println("r=" + row + " c=" + col + " cannot be filled, we go back");
+            if(! main.silent_mode) System.out.println("r=" + row + " c=" + col + " cannot be filled, we go back");
             fields[row][col].value = -1;
         }
     }
@@ -188,13 +188,13 @@ public class Grid {
             }
         }
         jPanel1.repaint();
-        System.out.println("no of steps: " + steps);
+        if(! main.silent_mode) System.out.println("no of steps: " + steps);
     }
 
     boolean ifRowOk(int r, int v) {
         for (Field f : fields[r]) {
             if (f.value == v) {
-                //System.out.println("row " + r + " already has value " + v);
+                //if(! main.silent_mode) System.out.println("row " + r + " already has value " + v);
                 return false;
             }
         }
@@ -204,7 +204,7 @@ public class Grid {
     boolean ifColOk(int c, int v) {
         for (int r = 0; r < size; r++) {
             if (fields[r][c].value == v) {
-                //System.out.println("col " + c + " already has value " + v);
+                //if(! main.silent_mode) System.out.println("col " + c + " already has value " + v);
                 return false;
             }
         }
@@ -226,21 +226,21 @@ public class Grid {
     }
 
     void cropDomainsAtCol(int c, int v, boolean domain[][][]) {
-        //System.out.println("croped " + v + " at col " + c);
+        //if(! main.silent_mode) System.out.println("croped " + v + " at col " + c);
         //  drawDoms(domain);
         for (int r = 0; r < Grid.size; r++) {
             domain[r][c][v] = false;
         }
-        System.out.println("deleting " + v + " from col " + c);
+        if(! main.silent_mode) System.out.println("deleting " + v + " from col " + c);
         //drawDoms(domain);
     }
 
     void cropDomainsAtRow(int r, int v, boolean domain[][][]) {
-        //System.out.println("croped " + v + " at row " + r);
+        //if(! main.silent_mode) System.out.println("croped " + v + " at row " + r);
         for (int c = 0; c < Grid.size; c++) {
             domain[r][c][v] = false;
         }
-        // System.out.println("deleting " + v + " from row " + r);
+        // if(! main.silent_mode) System.out.println("deleting " + v + " from row " + r);
         //drawDoms(domain);
     }
 

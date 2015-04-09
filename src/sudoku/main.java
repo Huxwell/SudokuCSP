@@ -19,6 +19,8 @@ public class main extends javax.swing.JFrame {
 
     Grid grid;
     public static boolean slow_mode = false;
+    public static boolean silent_mode = false;
+    long startTime = 0;
 
     public main() {
         initComponents();
@@ -40,6 +42,7 @@ public class main extends javax.swing.JFrame {
         jButton3 = new javax.swing.JButton();
         jButton4 = new javax.swing.JButton();
         jButton6 = new javax.swing.JButton();
+        jToggleButton1 = new javax.swing.JToggleButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -89,6 +92,13 @@ public class main extends javax.swing.JFrame {
             }
         });
 
+        jToggleButton1.setText("Silent mode (faster)");
+        jToggleButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jToggleButton1ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -105,7 +115,9 @@ public class main extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jButton4)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButton6))
+                        .addComponent(jButton6)
+                        .addGap(18, 18, 18)
+                        .addComponent(jToggleButton1))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(32, 32, 32)
                         .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
@@ -122,7 +134,8 @@ public class main extends javax.swing.JFrame {
                     .addComponent(jButton2)
                     .addComponent(jButton3)
                     .addComponent(jButton4)
-                    .addComponent(jButton6))
+                    .addComponent(jButton6)
+                    .addComponent(jToggleButton1))
                 .addContainerGap())
         );
 
@@ -143,7 +156,7 @@ public class main extends javax.swing.JFrame {
             try {
                 grid.solve(0, 0);
             } catch (Exception e) {
-                System.out.println(e.getMessage());
+                if(!silent_mode) System.out.println(e.getMessage());
             }
             grid.draw(jPanel1);
         }
@@ -179,11 +192,11 @@ public class main extends javax.swing.JFrame {
                         }
                     }
                 }
-                //System.out.println("del counter:" + delCounter);
+                //if(!silent_mode) System.out.println("del counter:" + delCounter);
                 //grid.drawDoms(domain);
                 grid.solve(0, 0, domain);
             } catch (Exception e) {
-                System.out.println(e.getMessage());
+                if(!silent_mode) System.out.println(e.getMessage());
             }
             grid.draw(jPanel1);
         }
@@ -206,12 +219,20 @@ public class main extends javax.swing.JFrame {
             grid.init(jPanel1);
             grid.fill_string(text);
             grid.draw(jPanel1);
-            //System.out.println(text);
+            //if(!silent_mode) System.out.println(text);
             fileReader.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
     }//GEN-LAST:event_jButton6ActionPerformed
+
+    private void jToggleButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jToggleButton1ActionPerformed
+            if (jToggleButton1.isSelected()) {
+               this.silent_mode = true;
+            } else {
+               this.silent_mode = false;
+            }
+    }//GEN-LAST:event_jToggleButton1ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -255,5 +276,6 @@ public class main extends javax.swing.JFrame {
     private javax.swing.JButton jButton4;
     private javax.swing.JButton jButton6;
     private javax.swing.JPanel jPanel1;
+    private javax.swing.JToggleButton jToggleButton1;
     // End of variables declaration//GEN-END:variables
 }
